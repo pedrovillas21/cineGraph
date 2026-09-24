@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-*/
 /out/
 
 # production
@@ -32,6 +33,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# dataset MovieLens (licença não permite redistribuir; o ETL baixa sozinho)
+/data/
+
+# arquivos temporários do Word
+~$*
 
 # vercel
 .vercel

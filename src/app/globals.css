@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
+/* Fontes do sistema: nada é baixado no build nem na sala de aula. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #f6f5f2;
+  --surface: #ffffff;
+  --surface-2: #efede8;
+  --foreground: #1b1a18;
+  --muted: #6a6862;
+  --border: #e3e0da;
+  --accent: #c2412d;
+  --user: #2f6f9f;
+  --movie: #c2412d;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111110;
+    --surface: #1a1a18;
+    --surface-2: #242421;
+    --foreground: #eeede9;
+    --muted: #a09e97;
+    --border: #2e2d2a;
+    --accent: #ec6b4f;
+    --user: #6fa8d6;
+    --movie: #ec6b4f;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-user: var(--user);
+  --color-movie: var(--movie);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }

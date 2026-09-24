@@ -2,26 +2,45 @@
   "name": "cinegraph",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "tsx scripts/migrate.ts migrate --deploy && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "graph:hello": "tsx scripts/hello-graph.ts",
+    "recommend": "tsx scripts/recommend.ts",
+    "etl": "tsx scripts/etl-movielens.ts",
+    "db:migrate": "tsx scripts/migrate.ts migrate",
+    "db:info": "tsx scripts/migrate.ts info",
+    "db:validate": "tsx scripts/migrate.ts validate",
+    "db:new": "tsx scripts/migrate.ts new"
   },
   "dependencies": {
+    "adm-zip": "^0.6.1",
+    "csv-parse": "^7.0.2",
+    "dotenv": "^18.0.3",
+    "neo4j-driver": "^6.2.0",
+    "next": "15.5.26",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.26"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/adm-zip": "^0.5.8",
+    "@types/node": "^22.20.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.26",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.1"
   }
 }
