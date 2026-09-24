@@ -1,5 +1,6 @@
 import type { DashboardData } from "@/server/services/dashboardService";
 import { fmt } from "./format";
+import { MOBILE_LIMIT } from "./TopMoviesCard";
 
 type Props = Pick<DashboardData, "user" | "missingUser" | "neighborhood" | "cypher">;
 
@@ -47,8 +48,8 @@ export function NeighborhoodCard({ user, missingUser, neighborhood, cypher }: Pr
       )}
 
       <ul className="divide-y divide-border text-sm">
-        {neighborhood.top.map((n) => (
-          <li key={n.userId} className="py-2">
+        {neighborhood.top.map((n, i) => (
+          <li key={n.userId} className={`py-2 ${i < MOBILE_LIMIT ? "" : "hidden sm:block"}`}>
             <div className="flex justify-between">
               <span className="text-user">{n.name}</span>
               <span className="tabular-nums text-muted">{n.common} em comum</span>

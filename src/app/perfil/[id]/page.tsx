@@ -4,6 +4,7 @@ import { Avatar } from "@/components/Avatar";
 import { DemoNotice } from "@/components/DemoNotice";
 import { MovieCard, MovieGrid } from "@/components/MovieCard";
 import { ProfileCard } from "@/components/ProfileCard";
+import { Rail } from "@/components/Rail";
 import { Section } from "@/components/Section";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getProfile } from "@/server/services/catalogService";
@@ -21,12 +22,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       <DemoNotice dbError={data.dbError} />
 
       <section className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-5 px-4 py-8 sm:px-6">
-          <Avatar initials={profile.initials} hue={profile.hue} size={72} />
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 py-6 sm:gap-5 sm:px-6 sm:py-8">
+          <Avatar initials={profile.initials} hue={profile.hue} size={64} />
           <div className="min-w-0 flex-1">
             <p className="text-sm text-muted">Olá,</p>
-            <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
-            <p className="mt-1 text-muted">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{profile.name}</h1>
+            <p className="mt-1 text-sm text-muted sm:text-base">
               Curte {profile.taste} · {profile.ratedCount} filmes avaliados
             </p>
           </div>
@@ -59,11 +60,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           title="Pessoas com gosto parecido"
           subtitle="São elas que inspiram as suas recomendações. Toque para ver o que cada uma indica."
         >
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Rail size="card" grid="sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             {data.similar.map((p) => (
               <ProfileCard key={p.id} profile={p} note={`${p.inCommon} filmes que vocês dois viram`} />
             ))}
-          </div>
+          </Rail>
         </Section>
       )}
 

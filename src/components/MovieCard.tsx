@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { MovieCard as MovieCardData, RecommendationCard } from "@/server/services/catalogService";
 import { Poster } from "./Poster";
+import { Rail } from "./Rail";
 
 type Props = {
   movie: MovieCardData & Partial<Pick<RecommendationCard, "match" | "people" | "because">> & { rating?: number };
@@ -42,5 +43,5 @@ export function MovieCard({ movie, profileId }: Props) {
 }
 
 export function MovieGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-6">{children}</div>;
+  return <Rail grid="sm:grid-cols-4 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-6">{children}</Rail>;
 }

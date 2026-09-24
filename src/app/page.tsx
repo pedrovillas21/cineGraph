@@ -2,6 +2,7 @@ import Image from "next/image";
 import { DemoNotice } from "@/components/DemoNotice";
 import { MovieCard, MovieGrid } from "@/components/MovieCard";
 import { ProfileCard } from "@/components/ProfileCard";
+import { Rail } from "@/components/Rail";
 import { Section } from "@/components/Section";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getHome } from "@/server/services/catalogService";
@@ -32,17 +33,17 @@ export default async function Home() {
           ))}
         </div>
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-neutral-950 via-neutral-950/80 to-neutral-950/40" />
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-28">
           <p className="text-sm font-medium uppercase tracking-widest text-orange-300">CineGraph</p>
-          <h1 className="mt-3 max-w-2xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+          <h1 className="mt-3 max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
             Descubra o próximo filme que você vai amar.
           </h1>
-          <p className="mt-4 max-w-xl text-lg text-neutral-300">
+          <p className="mt-3 max-w-xl text-neutral-300 sm:mt-4 sm:text-lg">
             Indicamos filmes a partir do gosto de pessoas parecidas com você, e mostramos o porquê de cada indicação.
           </p>
           <a
             href="#perfis"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-lg transition hover:brightness-110"
+            className="mt-6 inline-flex sm:mt-8 items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-lg transition hover:brightness-110"
           >
             Escolher um perfil <span aria-hidden>↓</span>
           </a>
@@ -54,13 +55,13 @@ export default async function Home() {
         title="Quem está assistindo?"
         subtitle="Cada perfil é uma pessoa real que avaliou filmes. Escolha um para ver as indicações dele."
       >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Rail size="card" grid="sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           {data.featured.map((p) => (
             <ProfileCard key={p.id} profile={p} />
           ))}
-        </div>
+        </Rail>
 
-        <form action="/perfil" className="mt-6 flex flex-wrap items-center gap-3 text-sm">
+        <form action="/perfil" className="mt-4 flex sm:mt-6 flex-wrap items-center gap-3 text-sm">
           <label htmlFor="perfil-id" className="text-muted">
             Ou abra qualquer perfil pelo número:
           </label>

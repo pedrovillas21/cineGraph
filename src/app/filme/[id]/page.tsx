@@ -5,6 +5,7 @@ import { Avatar } from "@/components/Avatar";
 import { DemoNotice } from "@/components/DemoNotice";
 import { MovieCard, MovieGrid } from "@/components/MovieCard";
 import { Poster } from "@/components/Poster";
+import { Rail } from "@/components/Rail";
 import { Section } from "@/components/Section";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getMovie } from "@/server/services/catalogService";
@@ -50,19 +51,20 @@ export default async function MoviePage({
         )}
         <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/30" />
 
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:flex-row sm:px-6 sm:py-14">
-          <div className="w-40 shrink-0 sm:w-56">
+        {/* No celular o pôster fica ao lado do título e notas/sinopse ocupam a largura toda. */}
+        <div className="mx-auto grid max-w-6xl grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-4 gap-y-5 px-4 py-6 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-8 sm:px-6 sm:py-14">
+          <div className="sm:row-span-2">
             <Poster url={movie.posterUrl} title={movie.title} className="shadow-2xl" priority />
           </div>
 
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             {viewer && (
               <Link href={`/perfil/${viewer.profile.id}`} className="text-sm text-neutral-300 hover:text-white">
                 ← Voltar para {viewer.profile.name}
               </Link>
             )}
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{movie.title}</h1>
-            {movie.originalTitle && <p className="text-neutral-400">{movie.originalTitle}</p>}
+            <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-4xl">{movie.title}</h1>
+            {movie.originalTitle && <p className="text-sm text-neutral-400 sm:text-base">{movie.originalTitle}</p>}
 
             <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-neutral-300">
               {movie.year && <span>{movie.year}</span>}
@@ -73,8 +75,10 @@ export default async function MoviePage({
                 </span>
               ))}
             </p>
+          </div>
 
-            <div className="mt-5 flex flex-wrap gap-6">
+          <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               <div>
                 <p className="text-2xl font-semibold text-amber-300">★ {nf(movie.audienceScore)}</p>
                 <p className="text-xs text-neutral-400">média de {movie.audienceCount} avaliações</p>
@@ -99,7 +103,9 @@ export default async function MoviePage({
               )}
             </div>
 
-            {movie.overview && <p className="mt-6 max-w-2xl leading-relaxed text-neutral-200">{movie.overview}</p>}
+            {movie.overview && (
+              <p className="mt-5 max-w-2xl leading-relaxed text-neutral-200 sm:mt-6">{movie.overview}</p>
+            )}
           </div>
         </div>
       </section>
@@ -109,7 +115,7 @@ export default async function MoviePage({
           title={`Por que indicamos para ${viewer.profile.name}`}
           subtitle="Pessoas com gosto parecido com o seu viram este filme e gostaram."
         >
-          <ul className="grid gap-4 md:grid-cols-3">
+          <Rail as="ul" size="card" grid="sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
             {viewer.why.people.map(({ profile, rating, bothLoved }) => (
               <li key={profile.id} className="rounded-xl border border-border bg-surface p-4">
                 <Link href={`/perfil/${profile.id}`} className="flex items-center gap-3 hover:text-accent">
@@ -126,7 +132,7 @@ export default async function MoviePage({
                 )}
               </li>
             ))}
-          </ul>
+          </Rail>
         </Section>
       )}
 
