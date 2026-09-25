@@ -1,3 +1,4 @@
+import { GraphTour } from "@/components/GraphTour";
 import { Reveal, Stagger, WordReveal } from "@/components/motion";
 import { NeighborhoodCard } from "@/components/NeighborhoodCard";
 import { Section } from "@/components/Section";
@@ -6,6 +7,7 @@ import { StatCard } from "@/components/StatCard";
 import { TopMoviesCard } from "@/components/TopMoviesCard";
 import { fmt } from "@/components/format";
 import { getDashboard } from "@/server/services/dashboardService";
+import { getTour } from "@/server/services/tourService";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +32,7 @@ const steps = [
 export default async function HowItWorks({ searchParams }: { searchParams: Promise<{ user?: string }> }) {
   const { user } = await searchParams;
   const data = await getDashboard(user);
+  const tour = getTour();
 
   return (
     <main>
@@ -75,6 +78,25 @@ export default async function HowItWorks({ searchParams }: { searchParams: Promi
           </p>
         </Reveal>
       </section>
+
+      <Section
+        id="grafo-interativo"
+        title="Veja o grafo encontrar seus próximos filmes"
+        subtitle="Escolha alguém e aperte Pesquisar. Salto a salto, você vê como o CineGraph liga pessoas com gostos parecidos e chega às recomendações, sempre com o motivo."
+      >
+        <GraphTour
+          data={tour}
+          liveStats={
+            data.source === "neo4j"
+              ? {
+                  users: fmt.format(data.stats.users),
+                  movies: fmt.format(data.stats.movies),
+                  edges: fmt.format(data.stats.edges),
+                }
+              : undefined
+          }
+        />
+      </Section>
 
       <Section
         title="Para os curiosos: o grafo por dentro"
