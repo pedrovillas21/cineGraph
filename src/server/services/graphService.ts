@@ -41,7 +41,10 @@ export async function loadGraphFromDb(): Promise<Graph> {
   return g;
 }
 
-let cached: Promise<LoadedGraph> | null = null;
+// Guardado em globalThis (e não numa variável do módulo) porque o Next empacota
+// instrumentation.ts separado das páginas: assim o pré-carregamento feito ao
+// ligar o servidor é o mesmo grafo que as páginas usam.
+const store = globalThis as typeof globalThis & { __cinegraphGraph?: Promise<LoadedGraph> | null };
 
 /**
  * Grafo em memória compartilhado pela aplicação. Com o Neo4j configurado,
@@ -52,18 +55,18 @@ let cached: Promise<LoadedGraph> | null = null;
 export async function loadGraph(): Promise<LoadedGraph> {
   const start = performance.now();
   if (!hasDatabase()) {
-    cached ??= Promise.resolve({ graph: buildFixtureGraph(), source: "fixture", loadMs: 0 });
-    return cached;
+    store.__cinegraphGraph ??= Promise.resolve({ graph: buildFixtureGraph(), source: "fixture", loadMs: 0 });
+    return store.__cinegraphGraph;
   }
-  cached ??= loadGraphFromDb().then((graph) => ({
+  store.__cinegraphGraph ??= loadGraphFromDb().then((graph) => ({
     graph,
     source: "neo4j" as const,
     loadMs: performance.now() - start,
   }));
   try {
-    return await cached;
+    return await store.__cinegraphGraph;
   } catch (err) {
-    cached = null;
+    store.__cinegraphGraph = null;
     return { graph: buildFixtureGraph(), source: "fixture", loadMs: 0, error: (err as Error).message };
   }
 }

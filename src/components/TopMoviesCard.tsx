@@ -1,5 +1,6 @@
 import type { RankedMovieView } from "@/server/services/dashboardService";
 import { fmt } from "./format";
+import { GrowBar } from "./motion";
 import { Poster } from "./Poster";
 
 /** No celular o ranking mostra só o topo, para não alongar a página. */
@@ -8,7 +9,7 @@ export const MOBILE_LIMIT = 5;
 export function TopMoviesCard({ movies }: { movies: RankedMovieView[] }) {
   const maxDegree = movies[0]?.degree ?? 1;
   return (
-    <section className="min-w-0 rounded-xl border border-border bg-surface p-4 sm:p-5">
+    <section className="h-full min-w-0 rounded-xl border border-border bg-surface p-4 sm:p-5">
       <h2 className="font-semibold">Filmes mais populares</h2>
       <p className="mb-4 text-sm text-muted">Grau do vértice-filme = nº de avaliações.</p>
       <ol className="space-y-3">
@@ -28,7 +29,7 @@ export function TopMoviesCard({ movies }: { movies: RankedMovieView[] }) {
                 <span className="shrink-0 tabular-nums text-muted">{fmt.format(m.degree)}</span>
               </div>
               <div className="mt-1 h-1.5 rounded bg-border">
-                <div className="h-1.5 rounded bg-movie" style={{ width: `${(m.degree / maxDegree) * 100}%` }} />
+                <GrowBar percent={(m.degree / maxDegree) * 100} delay={0.1 + i * 0.05} className="h-1.5 rounded bg-movie" />
               </div>
             </div>
           </li>

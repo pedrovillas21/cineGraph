@@ -1,6 +1,8 @@
 import neo4j, { type Driver } from "neo4j-driver";
 
-let driver: Driver | null = null;
+// Um driver por processo, em globalThis: o Next empacota instrumentation.ts
+// separado das páginas, e abrir uma segunda conexão com a AuraDB custa ~2 s.
+const store = globalThis as typeof globalThis & { __cinegraphDriver?: Driver | null };
 
 export function hasDatabase(): boolean {
   return Boolean(process.env.NEO4J_URI && process.env.NEO4J_PASSWORD);
@@ -18,11 +20,11 @@ export function getDriver(): Driver {
   const uri = process.env.NEO4J_URI;
   const password = process.env.NEO4J_PASSWORD;
   if (!uri || !password) throw new Error("NEO4J_URI/NEO4J_PASSWORD não configuradas (veja .env.example).");
-  driver ??= neo4j.driver(uri, neo4j.auth.basic(process.env.NEO4J_USERNAME || "neo4j", password), {
+  store.__cinegraphDriver ??= neo4j.driver(uri, neo4j.auth.basic(process.env.NEO4J_USERNAME || "neo4j", password), {
     disableLosslessIntegers: true,
     maxConnectionPoolSize: 10,
   });
-  return driver;
+  return store.__cinegraphDriver;
 }
 
 /** Executa uma consulta Cypher e devolve os registros como objetos simples. */
@@ -39,8 +41,8 @@ export async function cypher<T = Record<string, unknown>>(
 }
 
 export async function closeDriver(): Promise<void> {
-  if (driver) await driver.close();
-  driver = null;
+  if (store.__cinegraphDriver) await store.__cinegraphDriver.close();
+  store.__cinegraphDriver = null;
 }
 
 export { neo4j };

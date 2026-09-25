@@ -14,6 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/* Pôsteres vêm do CDN do TMDB: abre a conexão antes de o HTML pedir a primeira imagem. */}
+        <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://image.tmdb.org" />
+      </head>
       <body className="min-h-screen antialiased">
         <SiteHeader />
         {children}

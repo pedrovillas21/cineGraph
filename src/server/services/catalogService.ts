@@ -109,7 +109,7 @@ function profileSummary(graph: Graph, source: GraphSource, id: UserId): ProfileS
       .map((m) => graph.movie(m)?.posterPath)
       .filter((p): p is string => Boolean(p))
       .slice(0, 3)
-      .map((p) => `${IMG}/w185${p}`),
+      .map((p) => `${IMG}/w154${p}`),
   };
 }
 
@@ -243,7 +243,8 @@ export async function getMovie(movieId: MovieId, profileId?: UserId) {
       originalTitle: info.titlePt && info.titlePt !== info.title ? info.title : null,
       allGenres: info.genres.filter((g) => g !== "IMAX").map(genrePt),
       overview: extra?.overview ?? info.overview ?? null,
-      backdropUrl: extra?.backdropPath ? `${IMG}/w1280${extra.backdropPath}` : null,
+      // w780 basta: o fundo fica a 40% de opacidade atrás de um degradê.
+      backdropUrl: extra?.backdropPath ? `${IMG}/w780${extra.backdropPath}` : null,
       runtime: extra?.runtime ?? null,
       tmdbScore: info.voteAverage ?? null,
       audienceScore: avg,

@@ -36,7 +36,9 @@ export function Poster({
       alt={`Pôster de ${title}`}
       width={fixed?.width ?? 342}
       height={fixed?.height ?? 513}
-      className={`shrink-0 rounded-lg object-cover ${fixed ? "" : "aspect-[2/3] h-auto w-full"} ${className}`}
+      // Fundo neutro enquanto a imagem chega, para a grade não "pular".
+      className={`shrink-0 rounded-lg bg-surface-2 object-cover ${fixed ? "" : "aspect-[2/3] h-auto w-full"} ${className}`}
+      decoding="async"
       {...(priority ? { priority: true } : { loading: "lazy" as const })}
     />
   );

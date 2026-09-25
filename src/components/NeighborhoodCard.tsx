@@ -6,7 +6,7 @@ type Props = Pick<DashboardData, "user" | "missingUser" | "neighborhood" | "cyph
 
 export function NeighborhoodCard({ user, missingUser, neighborhood, cypher }: Props) {
   return (
-    <section className="min-w-0 rounded-xl border border-border bg-surface p-5">
+    <section className="h-full min-w-0 rounded-xl border border-border bg-surface p-5">
       <h2 className="font-semibold">Vizinhança de 2 saltos</h2>
       <p className="mb-4 text-sm text-muted">
         <span className="text-user">usuário</span> → <span className="text-movie">filme</span> →{" "}

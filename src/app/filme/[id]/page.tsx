@@ -6,9 +6,10 @@ import { DemoNotice } from "@/components/DemoNotice";
 import { MovieCard, MovieGrid } from "@/components/MovieCard";
 import { Poster } from "@/components/Poster";
 import { Rail } from "@/components/Rail";
+import { CountUp, GrowBar, Pop, Reveal, WordReveal } from "@/components/motion";
 import { Section } from "@/components/Section";
 import { SiteFooter } from "@/components/SiteFooter";
-import { getMovie } from "@/server/services/catalogService";
+import { getMoviePage } from "@/server/services/pageData";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ export default async function MoviePage({
 }) {
   const [{ id }, { perfil }] = await Promise.all([params, searchParams]);
   const profileId = perfil !== undefined && Number.isInteger(Number(perfil)) ? Number(perfil) : undefined;
-  const data = await getMovie(Number(id), profileId);
+  const data = await getMoviePage(Number(id), profileId);
   if (!data) notFound();
   const { movie, viewer } = data;
 
@@ -45,7 +46,7 @@ export default async function MoviePage({
             alt=""
             fill
             priority
-            className="-z-10 object-cover opacity-40"
+            className="-z-10 animate-settle object-cover opacity-40"
             sizes="100vw"
           />
         )}
@@ -53,52 +54,73 @@ export default async function MoviePage({
 
         {/* No celular o pôster fica ao lado do título e notas/sinopse ocupam a largura toda. */}
         <div className="mx-auto grid max-w-6xl grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-4 gap-y-5 px-4 py-6 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-x-8 sm:px-6 sm:py-14">
-          <div className="sm:row-span-2">
+          <Reveal onMount delay={0.1} className="sm:row-span-2">
             <Poster url={movie.posterUrl} title={movie.title} className="shadow-2xl" priority />
-          </div>
+          </Reveal>
 
           <div className="min-w-0">
             {viewer && (
-              <Link href={`/perfil/${viewer.profile.id}`} className="text-sm text-neutral-300 hover:text-white">
-                ← Voltar para {viewer.profile.name}
+              <Link
+                href={`/perfil/${viewer.profile.id}`}
+                className="group inline-flex items-center gap-1.5 text-sm text-neutral-300 transition-colors hover:text-white"
+              >
+                <span aria-hidden className="transition-transform duration-500 ease-spring group-hover:-translate-x-1">
+                  ←
+                </span>
+                Voltar para {viewer.profile.name}
               </Link>
             )}
-            <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-4xl">{movie.title}</h1>
-            {movie.originalTitle && <p className="text-sm text-neutral-400 sm:text-base">{movie.originalTitle}</p>}
+            <WordReveal text={movie.title} className="mt-2 text-2xl font-bold tracking-tight sm:text-5xl" />
+            {movie.originalTitle && (
+              <Reveal onMount delay={0.3}>
+                <p className="text-sm text-neutral-400 sm:text-base">{movie.originalTitle}</p>
+              </Reveal>
+            )}
 
             <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-neutral-300">
               {movie.year && <span>{movie.year}</span>}
               {duration(movie.runtime) && <span>{duration(movie.runtime)}</span>}
-              {movie.allGenres.map((g) => (
-                <span key={g} className="rounded-full border border-white/20 px-2.5 py-0.5">
+              {movie.allGenres.map((g, i) => (
+                <Pop key={g} delay={0.35 + i * 0.06} className="rounded-full border border-white/20 px-2.5 py-0.5">
                   {g}
-                </span>
+                </Pop>
               ))}
             </p>
           </div>
 
-          <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
+          <Reveal onMount delay={0.45} className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
             <div className="flex flex-wrap gap-x-6 gap-y-3">
               <div>
-                <p className="text-2xl font-semibold text-amber-300">★ {nf(movie.audienceScore)}</p>
+                <p className="text-2xl font-semibold text-amber-300">
+                  ★ <CountUp value={movie.audienceScore} decimals={1} />
+                </p>
                 <p className="text-xs text-neutral-400">média de {movie.audienceCount} avaliações</p>
               </div>
               {movie.tmdbScore !== null && movie.tmdbScore > 0 && (
                 <div>
-                  <p className="text-2xl font-semibold">{nf(movie.tmdbScore)}</p>
+                  <p className="text-2xl font-semibold">
+                    <CountUp value={movie.tmdbScore} decimals={1} />
+                  </p>
                   <p className="text-xs text-neutral-400">nota no TMDB (0 a 10)</p>
                 </div>
               )}
               {viewer?.rating != null && (
                 <div>
-                  <p className="text-2xl font-semibold text-emerald-300">★ {nf(viewer.rating)}</p>
+                  <p className="text-2xl font-semibold text-emerald-300">
+                    ★ <CountUp value={viewer.rating} decimals={1} />
+                  </p>
                   <p className="text-xs text-neutral-400">sua nota</p>
                 </div>
               )}
               {viewer?.why && (
                 <div>
-                  <p className="text-2xl font-semibold text-emerald-300">{viewer.why.match}%</p>
+                  <p className="text-2xl font-semibold text-emerald-300">
+                    <CountUp value={viewer.why.match} suffix="%" />
+                  </p>
                   <p className="text-xs text-neutral-400">combina com você</p>
+                  <div className="mt-1.5 h-1 w-28 overflow-hidden rounded-full bg-white/15">
+                    <GrowBar percent={viewer.why.match} delay={0.5} className="h-full rounded-full bg-emerald-300" />
+                  </div>
                 </div>
               )}
             </div>
@@ -106,7 +128,7 @@ export default async function MoviePage({
             {movie.overview && (
               <p className="mt-5 max-w-2xl leading-relaxed text-neutral-200 sm:mt-6">{movie.overview}</p>
             )}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -117,8 +139,11 @@ export default async function MoviePage({
         >
           <Rail as="ul" size="card" grid="sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
             {viewer.why.people.map(({ profile, rating, bothLoved }) => (
-              <li key={profile.id} className="rounded-xl border border-border bg-surface p-4">
-                <Link href={`/perfil/${profile.id}`} className="flex items-center gap-3 hover:text-accent">
+              <div
+                key={profile.id}
+                className="group h-full rounded-2xl border border-border bg-surface p-4 transition-[transform,box-shadow,border-color] duration-500 ease-spring hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_18px_40px_-18px_rgb(0_0_0/0.35)]"
+              >
+                <Link href={`/perfil/${profile.id}`} className="flex items-center gap-3 transition-colors group-hover:text-accent">
                   <Avatar initials={profile.initials} hue={profile.hue} size={40} />
                   <div>
                     <p className="font-semibold">{profile.name}</p>
@@ -130,7 +155,7 @@ export default async function MoviePage({
                     Vocês dois amaram <span className="text-foreground">{bothLoved.join(", ")}</span>.
                   </p>
                 )}
-              </li>
+              </div>
             ))}
           </Rail>
         </Section>
