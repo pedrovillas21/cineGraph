@@ -12,7 +12,7 @@ import { unstable_cache } from "next/cache";
 import { getHome, getMovie, getProfile } from "./catalogService";
 
 /** Troque ao mudar o formato dos dados das telas, para descartar o cache antigo. */
-const VERSION = "v1";
+const VERSION = "v2";
 /** Após rodar o ETL, as telas se atualizam em até 1 hora. */
 const REVALIDATE = 3600;
 

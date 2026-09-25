@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DemoNotice } from "@/components/DemoNotice";
-import { MovieCard, MovieGrid } from "@/components/MovieCard";
 import { ProfileCard } from "@/components/ProfileCard";
+import { PublicFavorites } from "@/components/PublicFavorites";
 import { Rail } from "@/components/Rail";
 import { GraphDemo, Reveal, WordReveal } from "@/components/motion";
 import { Section } from "@/components/Section";
@@ -151,12 +151,12 @@ export default async function Home() {
         </form>
       </Section>
 
-      <Section title="Os favoritos do público" subtitle="Os filmes mais avaliados por todos os perfis.">
-        <MovieGrid>
-          {data.popular.map((m) => (
-            <MovieCard key={m.movieId} movie={m} />
-          ))}
-        </MovieGrid>
+      <Section
+        id="favoritos"
+        title="Os favoritos do público"
+        subtitle="Os filmes mais avaliados, separados por estilo. Toque em um filme para ver quem mais combina com ele."
+      >
+        <PublicFavorites popular={data.popular} shelves={data.shelves} />
       </Section>
 
       <SiteFooter hasTmdb={data.hasTmdb} />
