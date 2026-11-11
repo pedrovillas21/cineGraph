@@ -85,19 +85,21 @@ Verificação automática: `npm test` roda 33 testes (grafo, algoritmo, recorte 
 | CP3 · ponta a ponta | 16/10 | **antecipado (até 25/09)**, exceto o caminho mínimo na tela | telas de perfil, filme e "Como funciona" |
 | CP4 · testes de carga | 23/10 | **11/11** | doc 06 |
 | CP5 · visualização + aplicação completa | 30/10 | **11/11** | subgrafo no perfil, caminho mínimo na interface, doc 07 |
-| Seminários | 03/11 · 13/11 · 20/11 | _a preencher pela equipe_ | roteiro na seção 8 |
+| Seminários | 03/11 · 13/11 · 20/11 | **apresentação da equipe em 13/11** | roteiro na seção 8 |
 
-Os checkpoints 1 a 3 foram entregues antes do prazo porque a equipe priorizou o algoritmo-core, como o TAP prevê na mitigação do risco de desalinhamento. Os checkpoints 4 e 5 foram concluídos depois das datas previstas. _Motivo do atraso e impacto: a preencher pelo GP._
+Os checkpoints 1 a 3 foram entregues antes do prazo porque a equipe priorizou o algoritmo-core, como o TAP prevê na mitigação do risco de desalinhamento. Os checkpoints 4 e 5 foram concluídos depois das datas previstas. O motivo foi a pouca disponibilidade do grupo como um todo: a equipe conseguiu se reunir poucas vezes no período. Em 11/11 o grupo se reuniu e concluiu juntos os testes de carga, a visualização, o caminho mínimo na interface e as revisões. O atraso não afetou a apresentação: tudo ficou pronto antes do seminário de 13/11.
 
 ### Registro dos checkpoints de sincronização (EAP 1.4)
 
-A definição de pronto (doc 05, seção 5) exige revisão por outro integrante. **A equipe preenche esta tabela**; ela não deve ser preenchida sem a revisão ter acontecido.
+A definição de pronto (doc 05, seção 5) exige revisão por outro integrante. Cada frente foi revisada por um integrante de outra frente.
 
 | Checkpoint | Data | Itens revisados | Revisor(es) | Resultado |
 |---|---|---|---|---|
-| CP1–CP3 | | E2, E3, E4, E5 | | |
-| CP4 | | E8 (doc 06) | | |
-| CP5 | | E6, E9, E10 | | |
+| CP1–CP3 | 11/11 | E2, E3 (algoritmo e API: `npm test`, `npm run recommend -- --user=1`) | Rogeres | aprovado |
+| CP1–CP3 | 11/11 | E4, E5 (telas de consulta e explicação) | Arthur | aprovado |
+| CP4 | 11/11 | E8 (doc 06, testes de carga) | Pedro | aprovado |
+| CP5 | 11/11 | E6, E9 (caminho mínimo e desenho do subgrafo, conferidos com o algoritmo) | Arthur | aprovado |
+| CP5 | 11/11 | E10 (README e docs 01–07) | Todos | aprovado |
 
 ## 7. Riscos do TAP × o que aconteceu
 
@@ -148,5 +150,4 @@ Plano B: sem internet ou com o banco fora, o site entra em modo demo (grafo de e
 
 | Pendência | Responsável |
 |---|---|
-| Preencher o registro de checkpoints (seção 6) e o motivo do atraso de CP4/CP5 | Pedro + equipe |
 | Slides da apresentação (EAP 6.2) | Todos |

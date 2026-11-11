@@ -68,7 +68,7 @@ Legenda de status (revisão de 11/11): ✅ entregue · 🔄 em andamento · ⏳ 
 | 1.1 | TAP | Termo de Abertura v1.2 | Arthur | 15/09 | ✅ |
 | 1.2 | EAP e cronograma | este documento | Pedro | 18/09 | ✅ |
 | 1.3 | Escopo do MVP | `05-escopo-mvp.md` congelado | Pedro | 25/09 | ✅ |
-| 1.4 | Checkpoints de sincronização | revisão das 3 frentes a cada checkpoint | Pedro | quinzenal | 🔄 |
+| 1.4 | Checkpoints de sincronização | revisão cruzada das 3 frentes (registro no doc 07, seção 6) | Pedro | quinzenal | ✅ 11/11 |
 | **2** | **Modelagem e algoritmo** | | **Arthur** | | |
 | 2.1 | Modelo conceitual | `01-modelo-conceitual.md` | Arthur | 28/08 | ✅ |
 | 2.2 | Especificação do algoritmo | `02-algoritmo.md` (entrada, saída, complexidade) | Arthur | 04/09 | ✅ |
