@@ -362,10 +362,30 @@ export async function getProfile(userId: UserId) {
     };
   });
 
-  const similar: SimilarProfile[] = findNeighbors(graph, userId, { neighbors: 4 }).neighbors.map((n) => ({
-    ...profileSummary(graph, source, n.userId),
-    inCommon: n.via.length,
-  }));
+  // Recorte do grafo para o desenho "por dentro da recomendação" (só com vizinhos reais)
+  const subgraph = result.strategy === "neighborhood" ? recommendationSubgraph(graph, result, { neighbors: 4 }) : null;
+  if (subgraph) {
+    for (const n of subgraph.nodes) {
+      const { kind, id } = parseKey(n.key);
+      n.label = kind === "user" ? (id === userId ? "Você" : profileName(source, id)) : graph.title(id);
+    }
+  }
+
+  // "Pessoas com gosto parecido" = as mesmas pessoas do desenho: as que sustentam as
+  // recomendações exibidas. Sem vizinhos válidos, as mais parecidas no geral.
+  const common = new Map<UserId, number>();
+  for (const r of result.recommendations) for (const s of r.supporters) common.set(s.userId, s.common);
+  const similar: SimilarProfile[] = subgraph
+    ? subgraph.nodes
+        .filter((n) => n.role === "neighbor")
+        .map((n) => {
+          const id = parseKey(n.key).id;
+          return { ...profileSummary(graph, source, id), inCommon: common.get(id)! };
+        })
+    : findNeighbors(graph, userId, { neighbors: 4 }).neighbors.map((n) => ({
+        ...profileSummary(graph, source, n.userId),
+        inCommon: n.via.length,
+      }));
 
   return {
     ...sourceInfo(graph, source, error),
@@ -376,18 +396,7 @@ export async function getProfile(userId: UserId) {
       .slice(0, 12)
       .map((m) => ({ ...movieCard(graph, m), rating: graph.rating(userId, m)! })),
     similar,
-    // Recorte do grafo para o desenho "por dentro da recomendação" (só com vizinhos reais)
-    subgraph:
-      result.strategy === "neighborhood"
-        ? (() => {
-            const sub = recommendationSubgraph(graph, result);
-            for (const n of sub.nodes) {
-              const { kind, id } = parseKey(n.key);
-              n.label = kind === "user" ? (id === userId ? "Você" : profileName(source, id)) : graph.title(id);
-            }
-            return sub;
-          })()
-        : null,
+    subgraph,
   };
 }
 

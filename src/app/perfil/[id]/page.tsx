@@ -68,9 +68,13 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       {data.similar.length > 0 && (
         <Section
           title="Pessoas com gosto parecido"
-          subtitle="São elas que inspiram as suas recomendações. Toque para ver o que cada uma indica."
+          subtitle="São elas que inspiram as suas recomendações: as mesmas pessoas do desenho abaixo. Toque para ver o que cada uma indica."
         >
-          <Rail size="card" grid="sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          <Rail
+            size="card"
+            // 4 pessoas na maioria dos perfis; 5 ou 6 quando é preciso para nenhuma recomendação do desenho ficar solta
+            grid={`sm:grid-cols-2 sm:gap-4 ${data.similar.length > 4 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}
+          >
             {data.similar.map((p) => (
               <ProfileCard key={p.id} profile={p} note={`${p.inCommon} filmes que vocês dois viram`} />
             ))}

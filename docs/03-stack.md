@@ -60,7 +60,7 @@ flowchart LR
   - **Cypher:** a travessia roda no próprio Neo4j (`?engine=cypher`).
   - **Memória:** o grafo é carregado uma vez por instância (~0,5 s) e o algoritmo roda em TypeScript.
 
-  A comparação entre as duas está no [relatório de testes de carga](06-testes-de-carga.md): mesmos resultados, memória em milissegundos e Cypher em ~480 ms, quase tudo de rede até o AuraDB.
+  A comparação entre as duas está no [relatório de testes de carga](06-testes-de-carga.md): mesmos resultados, memória em milissegundos e Cypher em ~90 ms a partir da Vercel (~480 ms do notebook), quase tudo de rede até o AuraDB.
 - **Migrações automáticas:** no deploy de produção, o script `vercel-build` roda `migrate --deploy` antes do `next build`. O ETL também aplica as pendentes antes de carregar.
 - **Resiliência na apresentação:**
   - Um **cron diário** faz uma escrita mínima (`/api/cron/keepalive`), porque o AuraDB Free pausa após 3 dias sem uso.

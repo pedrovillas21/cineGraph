@@ -64,7 +64,7 @@ Por que o grafo resolve melhor do que o modelo relacional: a pergunta "o que pes
 | E4 | Tela de consulta | ✅ | `/` → escolher perfil ou buscar → `/perfil/1` |
 | E5 | Explicação da recomendação | ✅ | perfil ("Para quem amou…") e filme ("Por que indicamos para você") |
 | E6 | Métricas de grafo na interface | ✅ | `/como-funciona`: top filmes por grau e caminho mínimo entre dois usuários (memória × Cypher) |
-| E7 | Deploy público | 🔄 | configurado (Vercel + migrações + cron); **falta registrar a URL no README após o deploy desta versão** |
+| E7 | Deploy público | ✅ | <https://cinegraph-six.vercel.app> · deploy a cada push, migrações automáticas e cron diário de keep-alive (Vercel → Schedules → Cron Jobs) |
 | E8 | Testes de carga | ✅ | `docs/06-testes-de-carga.md` · `npm run loadtest -- --db` |
 | E9 | Visualização do grafo | ✅ | `/perfil/1#grafo`: 4 camadas, vértices por tipo, espessura da aresta = nota, notas ao passar o mouse |
 | E10 | Documentação | ✅ | README + docs 01–07 |
@@ -126,7 +126,7 @@ Antes da aula: abrir `/api/health` (deve responder `"ok": true`) e `/perfil/1` u
 |---|---|---|---|
 | 1 | `/` | escolher o Perfil 1 ou buscar um filme | os perfis são usuários anônimos do MovieLens |
 | 2 | `/perfil/1` | recomendações com "Para quem amou…" | cada recomendação vem de pessoas com gosto parecido |
-| 3 | `/perfil/1#grafo` | o desenho do subgrafo; passar o mouse num vizinho | as 4 colunas são os saltos u → m → v → m'; a espessura é a nota; a similaridade aparece sob cada vizinho |
+| 3 | `/perfil/1#grafo` | o desenho do subgrafo; passar o mouse num vizinho | as 4 colunas são os saltos u → m → v → m'; a espessura é a nota; a similaridade aparece sob cada vizinho; as pessoas do desenho são as mesmas de "Pessoas com gosto parecido": as que sustentam as recomendações exibidas |
 | 4 | `/filme/<id>?perfil=1` | "Por que indicamos para você" | o caminho no grafo vira explicação em linguagem simples |
 | 5 | `/como-funciona` | tour animado no grafo de exemplo | os mesmos números do exemplo resolvido do doc 02 (A Origem 5,00; Procurando Nemo ≈ 4,60) |
 | 6 | `/como-funciona` | top filmes por grau; vizinhança de 2 saltos (memória × Cypher) | grau = popularidade; 2 saltos alcançam > 90% dos usuários, por isso o top-K por similaridade |
@@ -148,7 +148,5 @@ Plano B: sem internet ou com o banco fora, o site entra em modo demo (grafo de e
 
 | Pendência | Responsável |
 |---|---|
-| Fazer o deploy desta versão e registrar a URL no README (E7) | Pedro |
-| Rodar `npm run loadtest:remote -- --url=<URL>` e colar o resultado no doc 06, seção 3.4 | Rogeres |
 | Preencher o registro de checkpoints (seção 6) e o motivo do atraso de CP4/CP5 | Pedro + equipe |
 | Slides da apresentação (EAP 6.2) | Todos |

@@ -21,7 +21,7 @@ Projeto da disciplina **PI3B — Centro Universitário IESB**. O algoritmo é im
 | [06 · Testes de carga](docs/06-testes-de-carga.md) | 23/10 |
 | [07 · Relatório final](docs/07-relatorio-final.md) | 30/10 · seminários |
 
-**No ar:** _URL da Vercel (preencher após o deploy)_ · confira antes de apresentar: `/api/health`
+**No ar:** <https://cinegraph-six.vercel.app> · confira antes de apresentar: `/api/health`
 
 ## Stack
 

@@ -69,12 +69,23 @@ A carga pela aplicação variou entre as rodadas do mesmo dia. Com 602 usuários
 
 ### 3.4 A partir da Vercel
 
-_A preencher após o deploy:_ copie para o `.env.local` o mesmo `CRON_SECRET` configurado na Vercel (hoje ele está vazio no `.env.local`) e rode `npm run loadtest:remote -- --url=<URL do site>`. A rota `/api/bench` só lê (não recarrega o banco), exige o `CRON_SECRET` e mede o grafo completo. Ela mostra a latência real entre o servidor da Vercel e o AuraDB, que é a que o usuário do site sente.
+Medido em 11/11/2026, 17:39 UTC, com `npm run loadtest:remote -- --url=https://cinegraph-six.vercel.app`. A rota `/api/bench` roda as mesmas consultas dentro da função da Vercel (região `iad1`, EUA; Node 22.23), contra o grafo completo (602 usuários, 90.137 arestas). São 3 chamadas × 10 usuários. Ela só lê o banco e exige o `CRON_SECRET`.
+
+| | 2 saltos · memória | 2 saltos · Cypher | Híbrida | Caminho mínimo · memória | Caminho mínimo · Cypher | Só rede (`RETURN 1`) | Recomendação completa · memória |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Notebook → AuraDB (602, seção 3.2) | 0,7 / 4,6 | 478 / 525 | 485 / 635 | 0,1 / 10,0 | 472 / 497 | 473 / 631 | 2,7 / 15,1 |
+| **Vercel `iad1` → AuraDB** | 1,1 / 6,6 | **88,8 / 120** | **93,4 / 133** | 0,2 / 24,0 | **84,0 / 92,2** | **83,8 / 86,8** | 7,5 / 25,6 |
+
+| | 2 saltos · Neo4j | Híbrida · Neo4j | Caminho mínimo · Neo4j | `RETURN 1` · Neo4j | Alcance dos 2 saltos | Divergências |
+|---|---:|---:|---:|---:|---:|---:|
+| Vercel `iad1` → AuraDB | 5 / 36 | 7 / 45 | 1 / 9 | 1 / 1 | 93,7% | 0 / 0 / 0 |
+
+No site publicado, cada consulta Cypher custa ~85–90 ms, cerca de 5× menos do que a partir do notebook. A ida e volta mínima cai de ~475 ms para ~84 ms, porque o servidor da Vercel fica perto do AuraDB. O tempo dentro do Neo4j é o mesmo nos dois casos (1 a 7 ms), o que confirma que a diferença é só de rede. A memória continua centenas de vezes mais rápida. Os tempos em memória um pouco maiores na Vercel (1 vCPU compartilhada, contra o notebook) não mudam a conclusão.
 
 ## 4. Análise
 
 1. **As três estratégias dão o mesmo resultado.** Em 270 comparações (90 por tamanho), as listas de vizinhos e os comprimentos de caminho coincidiram. O Neo4j é usado só para percorrer padrões; a similaridade, o top-K e o score continuam no código da equipe.
-2. **A rede domina o Cypher.** Toda consulta Cypher leva ~475 ms vistos pela aplicação, o mesmo que um `RETURN 1`. O próprio Neo4j informa que gasta só 1 a 5 ms por travessia. Ou seja, mais de 99% do tempo é ida e volta pela internet até o AuraDB, e não o algoritmo.
+2. **A rede domina o Cypher.** Do notebook, toda consulta Cypher leva ~475 ms vistos pela aplicação, o mesmo que um `RETURN 1`; da Vercel, ~85–90 ms, também igual ao `RETURN 1` (seção 3.4). O próprio Neo4j informa que gasta só 1 a 7 ms por travessia. Ou seja, a maior parte do tempo é ida e volta pela rede até o AuraDB, e não o algoritmo.
 3. **Dentro do banco, o custo cresce com o grafo, como a teoria prevê.** Os 2 saltos levam de 2 a 4 ms (O(Σ grau(m)) para m ∈ N(u)), e o p95 da híbrida sobe de 11 para 44 ms com 602 usuários, porque a soma do produto escalar percorre mais arestas.
 4. **Em memória, cada consulta segue a complexidade do doc 02:**
    - **2 saltos** fica abaixo de 1 ms.
@@ -100,7 +111,7 @@ As outras consultas não têm gargalo: a recomendação completa leva poucos ms 
 
 ## 6. Limitações
 
-- As tabelas 3.1 a 3.3 foram medidas do notebook da equipe. A seção 3.4 mede a partir da Vercel.
+- As tabelas 3.1 a 3.3 foram medidas do notebook da equipe. A seção 3.4 mede a partir da Vercel, só com o grafo completo (602 usuários), porque medir os subgrafos exigiria recarregar o banco do site.
 - O tempo interno do Neo4j tem resolução de 1 ms e não inclui a serialização no driver.
 - Os subgrafos usam os N primeiros usuários por id, não uma amostra aleatória, para seguir o mesmo critério do `--max-users` do ETL.
 - A AuraDB Free é compartilhada: a carga variou até 2× entre rodadas seguidas.
