@@ -151,7 +151,7 @@ Notação: d(x) = grau do vértice *x*; K = vizinhos usados; C = nº de candidat
 
 **Medição inicial (hello graph, dataset real, Node 22):** carga do grafo com 602 usuários, 3.650 filmes e 90.137 arestas em ~470 ms. O salto 2 do usuário 1 alcança 596 usuários em **~4 ms**.
 
-> **Observação importante:** o salto 2 alcança praticamente todos os usuários (596 de 601), porque os filmes populares conectam todo mundo. Por isso a **ponderação por similaridade e o corte top-K são indispensáveis**: sem eles, "vizinho" não discriminaria nada. Esse comportamento será medido nos testes de carga do checkpoint 4.
+> **Observação importante:** o salto 2 alcança praticamente todos os usuários (596 de 601), porque os filmes populares conectam todo mundo. Por isso a **ponderação por similaridade e o corte top-K são indispensáveis**: sem eles, "vizinho" não discriminaria nada. Os testes de carga confirmaram isso nos três tamanhos de grafo: os 2 saltos alcançam em média mais de 90% dos outros usuários (doc 06, coluna "Alcance").
 
 ## 6.1 Os saltos no banco de grafos (Cypher)
 
@@ -195,7 +195,8 @@ Lição para os testes de carga: com o banco na nuvem, o custo é dominado pelo 
 | Grau do usuário | `userDegree` | perfil/atividade |
 | Vizinhança de 2 saltos | `twoHopNeighbors` (`traversal.ts`) | base do salto 2 |
 | Caminho mínimo (BFS) | `shortestPath` (`traversal.ts`) | afinidade entre dois usuários na interface |
-| BFS limitada | `bfs(graph, start, maxDepth)` | subgrafo para a visualização (checkpoint 5) |
+| Recorte para a visualização | `recommendationSubgraph()` (`src/server/graph/subgraph.ts`) | subgrafo do checkpoint 5: u → até 6 filmes em comum → 5 vizinhos → 6 recomendações, só com arestas reais |
+| Distâncias de um usuário | `userDistances()` (uma BFS, O(V + E)) | quantos usuários estão a 2, 4, 6… arestas e qual é o mais distante (tela "Como funciona") |
 
 ## 8. Casos de borda
 

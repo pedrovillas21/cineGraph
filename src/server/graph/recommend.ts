@@ -20,7 +20,8 @@ export const DEFAULT_SHRINKAGE = 2;
 // ‖w_u‖ de cada usuário, calculada uma vez por grafo (O(|E|)).
 const normCache = new WeakMap<Graph, Map<UserId, number>>();
 
-function norm(graph: Graph, userId: UserId): number {
+/** ‖w_u‖: norma do vetor de notas do usuário (todas as avaliações). */
+export function userNorm(graph: Graph, userId: UserId): number {
   let norms = normCache.get(graph);
   if (!norms) {
     norms = new Map();
@@ -65,10 +66,10 @@ export function findNeighbors(
     }
   }
 
-  const nu = norm(graph, userId);
+  const nu = userNorm(graph, userId);
   const top = [...dot.entries()]
     .filter(([v]) => via.get(v)!.length >= minCommon)
-    .map(([v, d]) => ({ userId: v, similarity: d / (nu * norm(graph, v)), via: via.get(v)! }))
+    .map(([v, d]) => ({ userId: v, similarity: d / (nu * userNorm(graph, v)), via: via.get(v)! }))
     .sort((a, b) => b.similarity - a.similarity || a.userId - b.userId)
     .slice(0, neighbors);
   return { neighbors: top, reached: dot.size };

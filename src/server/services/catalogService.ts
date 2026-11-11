@@ -6,7 +6,9 @@ import { movieExtra } from "../db/graphQueries";
 import {
   findNeighbors,
   fixtureUserNames,
+  parseKey,
   recommend,
+  recommendationSubgraph,
   relatedMovies,
   topMoviesByDegree,
   type Graph,
@@ -374,6 +376,18 @@ export async function getProfile(userId: UserId) {
       .slice(0, 12)
       .map((m) => ({ ...movieCard(graph, m), rating: graph.rating(userId, m)! })),
     similar,
+    // Recorte do grafo para o desenho "por dentro da recomendação" (só com vizinhos reais)
+    subgraph:
+      result.strategy === "neighborhood"
+        ? (() => {
+            const sub = recommendationSubgraph(graph, result);
+            for (const n of sub.nodes) {
+              const { kind, id } = parseKey(n.key);
+              n.label = kind === "user" ? (id === userId ? "Você" : profileName(source, id)) : graph.title(id);
+            }
+            return sub;
+          })()
+        : null,
   };
 }
 

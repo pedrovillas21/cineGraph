@@ -33,11 +33,24 @@ export async function cypher<T = Record<string, unknown>>(
   params: Record<string, unknown> = {},
   mode: "read" | "write" = "read",
 ): Promise<T[]> {
-  const { records } = await getDriver().executeQuery(query, params, {
+  return (await cypherTimed<T>(query, params, mode)).rows;
+}
+
+/**
+ * Igual a cypher(), mais o tempo gasto dentro do Neo4j segundo o próprio banco
+ * (resultAvailableAfter + resultConsumedAfter), sem a ida e volta pela rede.
+ */
+export async function cypherTimed<T = Record<string, unknown>>(
+  query: string,
+  params: Record<string, unknown> = {},
+  mode: "read" | "write" = "read",
+): Promise<{ rows: T[]; serverMs: number }> {
+  const { records, summary } = await getDriver().executeQuery(query, params, {
     database: databaseName(),
     routing: mode === "read" ? neo4j.routing.READ : neo4j.routing.WRITE,
   });
-  return records.map((r) => r.toObject() as T);
+  const serverMs = neo4j.integer.toNumber(summary.resultAvailableAfter) + neo4j.integer.toNumber(summary.resultConsumedAfter);
+  return { rows: records.map((r) => r.toObject() as T), serverMs };
 }
 
 export async function closeDriver(): Promise<void> {

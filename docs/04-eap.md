@@ -46,6 +46,7 @@ flowchart TD
   D --> D3["4.3 Telas de consulta"]
   D --> D4["4.4 Visualização do grafo"]
   D --> D5["4.5 Deploy Vercel"]
+  D --> D6["4.6 Caminho mínimo na interface"]
 
   E --> E1["5.1 Subgrafos de teste"]
   E --> E2["5.2 Medição e relatório"]
@@ -54,11 +55,12 @@ flowchart TD
   F --> F1["6.1 README"]
   F --> F2["6.2 Slides e roteiro de demo"]
   F --> F3["6.3 Seminários"]
+  F --> F4["6.4 Relatório final"]
 ```
 
 ## 2. Dicionário da EAP
 
-Legenda de status em 25/09: ✅ entregue · 🔄 em andamento · ⏳ planejado
+Legenda de status (revisão de 11/11): ✅ entregue · 🔄 em andamento · ⏳ planejado. A data ao lado do ✅ indica entregas feitas depois de 25/09.
 
 | Código | Pacote de trabalho | Entregável | Responsável | Prazo | Status |
 |---|---|---|---|---|---|
@@ -84,14 +86,16 @@ Legenda de status em 25/09: ✅ entregue · 🔄 em andamento · ⏳ planejado
 | 4.1 | Hello graph | página inicial + `/api/graph/stats` e `/neighbors` | Pedro | 11/09 | ✅ |
 | 4.2 | API de recomendação | `GET /api/recommendations?userId=` no contrato do doc 02 | Pedro + Arthur | 09/10 | ✅ |
 | 4.3 | Telas de consulta | início (perfis), perfil (recomendações + motivo), filme (sinopse, "por que indicamos", relacionados) e "Como funciona" | Pedro | 16/10 | ✅ |
-| 4.4 | Visualização do grafo | subgrafo u → vizinhos → recomendações (nós e arestas) | Pedro | 30/10 | ⏳ |
+| 4.4 | Visualização do grafo | subgrafo u → filmes em comum → vizinhos → recomendações no perfil (`SubgraphView`), arestas com a nota | Pedro | 30/10 | ✅ 11/11 |
+| 4.6 | Caminho mínimo na interface | `/api/graph/path` + card em "Como funciona" (memória × Cypher, distribuição de distâncias) | Pedro + Arthur | 16/10 | ✅ 11/11 |
 | 4.5 | Deploy Vercel | URL pública, deploy a cada push, migrações automáticas e cron de keep-alive do Aura | Pedro | 02/10 | 🔄 |
 | **5** | **Testes de carga** | | **Rogeres** | | |
-| 5.1 | Subgrafos de teste | cargas com `--max-users=100/300/602` | Rogeres | 23/10 | ⏳ |
-| 5.2 | Medição e relatório | tempo de carga e de consulta por tamanho, memória × Cypher | Rogeres | 23/10 | ⏳ |
-| 5.3 | Otimizações | ajustes de estrutura/índices a partir do relatório | Arthur | 30/10 | ⏳ |
+| 5.1 | Subgrafos de teste | cargas com `--max-users=100/300/602` (`npm run loadtest -- --db`) | Rogeres | 23/10 | ✅ 11/11 |
+| 5.2 | Medição e relatório | `06-testes-de-carga.md`: tempo de carga e de consulta por tamanho, memória × Cypher | Rogeres | 23/10 | ✅ 11/11 |
+| 5.3 | Otimizações | ajustes a partir do relatório: BFS do caminho mínimo para ao achar o destino (16,9 → 0,1 ms); demais consultas sem gargalo | Arthur | 30/10 | ✅ 11/11 |
 | **6** | **Documentação e apresentação** | | **Todos** | | |
-| 6.1 | README | como rodar, ETL, deploy, arquitetura | Pedro | 30/10 | 🔄 |
+| 6.1 | README | como rodar, ETL, deploy, arquitetura, rotas e testes de carga | Pedro | 30/10 | ✅ 11/11 (falta a URL) |
+| 6.4 | Relatório final | `07-relatorio-final.md`: escopo × entregue, cronograma real, riscos, roteiro da demo | Todos | 20/11 | ✅ 11/11 |
 | 6.2 | Slides e roteiro de demo | roteiro com usuário-exemplo e explicação do caminho | Todos | 03/11 | ⏳ |
 | 6.3 | Seminários | live demo | Todos | 03/11 · 13/11 · 20/11 | ⏳ |
 

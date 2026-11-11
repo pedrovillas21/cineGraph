@@ -9,6 +9,7 @@ import {
   topMoviesByDegree,
   twoHopNeighbors,
   userDegree,
+  userDistances,
   userKey,
 } from "../src/server/graph";
 
@@ -74,5 +75,14 @@ describe("travessias", () => {
     // Ana → Matrix → Bruno → A Origem → Davi
     expect(shortestPath(g, userKey(1), userKey(4))).toEqual(["u:1", "m:10", "u:2", "m:60", "u:4"]);
     expect(shortestPath(g, userKey(1), userKey(1))).toEqual(["u:1"]);
+  });
+});
+
+describe("userDistances() — afinidade estrutural", () => {
+  it("conta usuários por distância e acha o mais distante", () => {
+    const d = userDistances(g, 1);
+    expect(Object.fromEntries(d.byDistance)).toEqual({ 2: 3, 4: 1 }); // Bruno, Carla, Eva · Davi
+    expect(d.farthest).toBe(4);
+    expect(d.unreachable).toBe(0);
   });
 });

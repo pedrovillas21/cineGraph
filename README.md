@@ -18,6 +18,10 @@ Projeto da disciplina **PI3B — Centro Universitário IESB**. O algoritmo é im
 | [03 · Stack e ambiente](docs/03-stack.md) | 11/09 |
 | [04 · EAP](docs/04-eap.md) | 18/09 |
 | [05 · Escopo do MVP](docs/05-escopo-mvp.md) | 25/09 |
+| [06 · Testes de carga](docs/06-testes-de-carga.md) | 23/10 |
+| [07 · Relatório final](docs/07-relatorio-final.md) | 30/10 · seminários |
+
+**No ar:** _URL da Vercel (preencher após o deploy)_ · confira antes de apresentar: `/api/health`
 
 ## Stack
 
@@ -39,9 +43,9 @@ Sem `.env.local`, a aplicação abre em **modo demo** com o grafo de exemplo (5 
 | Rota | Para quem | O que mostra |
 |---|---|---|
 | `/` | usuário final | escolha de perfil ("Quem está assistindo?") e favoritos do público |
-| `/perfil/[id]` | usuário final | recomendações com o motivo ("Para quem amou…"), pessoas com gosto parecido e melhores notas |
+| `/perfil/[id]` | usuário final | recomendações com o motivo ("Para quem amou…"), pessoas com gosto parecido, **desenho do subgrafo da recomendação** (você → filmes em comum → vizinhos → recomendados, arestas com a nota) e melhores notas |
 | `/filme/[id]?perfil=` | usuário final | sinopse, notas, "Por que indicamos para você" e "Quem amou este filme também amou" |
-| `/como-funciona` | apresentação/professor | explicação simples + números do grafo, vizinhança de 2 saltos e comparação memória × Cypher |
+| `/como-funciona` | apresentação/professor | explicação simples, tour animado do algoritmo, números do grafo, top filmes por grau, vizinhança de 2 saltos e **caminho mínimo entre dois usuários** (`?user=1&ate=2`), sempre comparando memória × Cypher |
 
 > Se você usa `npm run dev` e quer testar um build ao mesmo tempo, compile em outra pasta para não misturar arquivos: `NEXT_DIST_DIR=.next-verify npm run build`.
 
@@ -57,6 +61,9 @@ Sem `.env.local`, a aplicação abre em **modo demo** com o grafo de exemplo (5 
 | `npm run etl -- --dry-run` | baixa o MovieLens, filtra e mostra as contagens |
 | `npm run etl` | aplica migrações pendentes e carrega o grafo no Neo4j |
 | `npm run etl -- --reset --max-users=100` | recarrega só um subgrafo (testes de carga) |
+| `npm run loadtest` | testes de carga em memória com 100, 300 e 602 usuários ([relatório](docs/06-testes-de-carga.md)) |
+| `npm run loadtest -- --db` | mesmo, também no Neo4j (memória × Cypher × híbrida, tempo interno do banco). **Recarrega o banco** com cada subgrafo e restaura o grafo completo no fim |
+| `npm run loadtest:remote -- --url=https://…vercel.app` | mesmas medições rodando **dentro da Vercel** (só leitura, via `/api/bench`; usa o `CRON_SECRET`) |
 | `npm run db:migrate` / `db:info` / `db:validate` | migrações do banco (estilo Flyway) |
 | `npm run db:new -- "descrição"` | cria a próxima migração `V<n>__descricao.cypher` |
 
@@ -100,7 +107,9 @@ Os arquivos ficam em `db/migrations/V<n>__descricao.cypher`. O histórico, com c
 | `GET /api/graph/stats` | tamanho do grafo e top 10 filmes por grau |
 | `GET /api/graph/neighbors?userId=1&limit=20` | vizinhança de 2 saltos em memória |
 | `GET /api/graph/neighbors?userId=1&engine=cypher` | mesma travessia feita pelo Neo4j |
+| `GET /api/graph/path?from=1&to=2[&engine=cypher]` | caminho mínimo (BFS) entre dois usuários, com a nota de cada aresta |
 | `GET /api/cron/keepalive` | escrita mínima diária para o Aura não pausar |
+| `GET /api/bench?samples=10` | testes de carga dentro da Vercel; exige `Authorization: Bearer <CRON_SECRET>` (sem o segredo, a rota não existe) |
 | `GET /api/recommendations?userId=1&k=10` | recomendações no contrato `RecommendationResult` (doc 02) |
 
 ## Estrutura
@@ -113,7 +122,7 @@ src/
     graph/         algoritmo do grafo em TS puro (Graph, BFS, métricas, tipos/contrato)
     db/            driver do Neo4j e consultas Cypher
     services/      carga do grafo em memória e dados das telas
-scripts/           ETL do MovieLens, migrações e hello-graph (terminal)
+scripts/           ETL do MovieLens, migrações, hello-graph e testes de carga (terminal)
 db/migrations/     migrações versionadas do Neo4j (V<n>__descricao.cypher)
 tests/             testes (Vitest)
 docs/              entregas acadêmicas

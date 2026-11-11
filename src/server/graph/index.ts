@@ -4,3 +4,4 @@ export * from "./traversal";
 export * from "./metrics";
 export * from "./fixture";
 export * from "./recommend";
+export * from "./subgraph";

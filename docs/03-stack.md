@@ -26,9 +26,9 @@
 | Migrações | runner próprio **estilo Flyway** (`scripts/migrate.ts`) | arquivos `V<n>__desc.cypher` versionados, checksum e histórico em `(:__Migration)`; roda sozinho no deploy de produção |
 | Algoritmo do grafo | **TS puro** (`Map`/`Set`) em `src/server/graph` + travessias Cypher em `src/server/db/graphQueries.ts` | exigência metodológica do TAP; as duas versões são comparadas |
 | Scripts de terminal | `tsx` | roda `.ts` direto: ETL, migrações, hello-graph e PoC do checkpoint 1 |
-| Testes | Vitest | testes unitários do grafo e das migrações |
+| Testes | Vitest | testes unitários do grafo, do algoritmo, do recorte para a visualização e das migrações |
 | Hospedagem | **Vercel** (Hobby, grátis) | deploy automático a cada `git push`, HTTPS, URL pública e cron diário |
-| Visualização (checkpoint 5) | Cytoscape.js ou react-force-graph (+ Neo4j Browser na demo) | a decidir em 30/10; só desenha, sem lógica de recomendação |
+| Visualização (checkpoint 5) | **SVG próprio** em React (`SubgraphView.tsx`), sem biblioteca | decidido no CP5: o subgrafo tem 4 camadas fixas (os saltos do algoritmo), então um layout em colunas é mais legível que um layout de forças e não acrescenta dependência; o recorte vem pronto do servidor (`recommendationSubgraph`) |
 
 ## 3. Arquitetura
 
@@ -60,7 +60,7 @@ flowchart LR
   - **Cypher:** a travessia roda no próprio Neo4j (`?engine=cypher`).
   - **Memória:** o grafo é carregado uma vez por instância (~0,5 s) e o algoritmo roda em TypeScript.
 
-  A comparação entre as duas entra no relatório de testes de carga.
+  A comparação entre as duas está no [relatório de testes de carga](06-testes-de-carga.md): mesmos resultados, memória em milissegundos e Cypher em ~480 ms, quase tudo de rede até o AuraDB.
 - **Migrações automáticas:** no deploy de produção, o script `vercel-build` roda `migrate --deploy` antes do `next build`. O ETL também aplica as pendentes antes de carregar.
 - **Resiliência na apresentação:**
   - Um **cron diário** faz uma escrita mínima (`/api/cron/keepalive`), porque o AuraDB Free pausa após 3 dias sem uso.

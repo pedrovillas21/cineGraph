@@ -1,12 +1,16 @@
 // Monta os dados da tela inicial ("hello graph"). A interface recebe só dados
 // prontos e não conhece o banco nem o algoritmo.
 
-import { movieOverviews, twoHopCountCypher } from "../db/graphQueries";
+import { movieOverviews, shortestPathCypher, twoHopCountCypher } from "../db/graphQueries";
 import {
   fixtureUserNames,
   graphStats,
+  pathSteps,
+  shortestPath,
   topMoviesByDegree,
   twoHopNeighbors,
+  userDistances,
+  userKey,
   type Graph,
   type GraphStats,
   type MovieId,
@@ -54,6 +58,21 @@ export interface DashboardData {
   neighborhood: { reached: number; ms: number; top: NeighborView[] };
   /** Mesma travessia feita pelo Neo4j (só quando o banco está ativo). */
   cypher: { reached: number; ms: number } | { error: string } | null;
+  path: PathView;
+}
+
+/** Caminho mínimo entre dois usuários (métrica de afinidade, E6). */
+export interface PathView {
+  to: { id: number; name: string };
+  /** Id pedido na URL que não existe no grafo (a tela usa o mais distante). */
+  missingTo?: string;
+  length: number | null;
+  steps: { kind: "user" | "movie"; id: number; label: string; rating?: number }[];
+  ms: number;
+  /** Quantos usuários estão a 2, 4, 6… arestas de distância. */
+  distances: { distance: number; users: number }[];
+  unreachable: number;
+  cypher: { length: number | null; ms: number } | { error: string } | null;
 }
 
 function movieView(graph: Graph, id: MovieId): MovieView {
@@ -67,7 +86,7 @@ function movieView(graph: Graph, id: MovieId): MovieView {
   };
 }
 
-export async function getDashboard(requestedUser?: string): Promise<DashboardData> {
+export async function getDashboard(requestedUser?: string, requestedTo?: string): Promise<DashboardData> {
   const { graph, source, loadMs, error } = await loadGraph();
   const name = (id: number) =>
     source === "fixture" ? (fixtureUserNames[id] ?? `Usuário ${id}`) : `Usuário ${id}`;
@@ -80,23 +99,42 @@ export async function getDashboard(requestedUser?: string): Promise<DashboardDat
   const neighbors = twoHopNeighbors(graph, userId);
   const hopMs = performance.now() - t0;
 
+  // Caminho mínimo: até o usuário pedido ou, por padrão, até o mais distante
+  const dist = userDistances(graph, userId);
+  const askedTo = Number(requestedTo);
+  const toId =
+    requestedTo !== undefined && Number.isInteger(askedTo) && graph.hasUser(askedTo) ? askedTo : (dist.farthest ?? userId);
+  const t2 = performance.now();
+  const route = shortestPath(graph, userKey(userId), userKey(toId));
+  const pathMs = performance.now() - t2;
+
   const top = topMoviesByDegree(graph, 10);
   // Perfil do usuário: as notas mais altas que ele deu (arestas de maior peso)
   const rated = [...graph.moviesOf(userId).entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0]).slice(0, 6);
 
   // No Neo4j: mesma travessia em Cypher (comparação) + sinopses só dos filmes exibidos
   let cypher: DashboardData["cypher"] = null;
+  let cypherPath: PathView["cypher"] = null;
   let overviews = new Map<MovieId, string>();
   if (source === "neo4j") {
-    const t1 = performance.now();
-    const [count, texts] = await Promise.allSettled([
-      twoHopCountCypher(userId),
+    const timed = async <T,>(fn: () => Promise<T>) => {
+      const t = performance.now();
+      const value = await fn();
+      return { value, ms: performance.now() - t };
+    };
+    const [count, texts, cyPath] = await Promise.allSettled([
+      timed(() => twoHopCountCypher(userId)),
       movieOverviews([...top.map((m) => m.movieId), ...rated.map(([id]) => id)]),
+      timed(() => shortestPathCypher(userId, toId)),
     ]);
     cypher =
       count.status === "fulfilled"
-        ? { reached: count.value, ms: performance.now() - t1 }
+        ? { reached: count.value.value, ms: count.value.ms }
         : { error: (count.reason as Error).message };
+    cypherPath =
+      cyPath.status === "fulfilled"
+        ? { length: cyPath.value.value ? cyPath.value.value.length - 1 : null, ms: cyPath.value.ms }
+        : { error: (cyPath.reason as Error).message };
     if (texts.status === "fulfilled") overviews = texts.value;
   }
 
@@ -130,5 +168,19 @@ export async function getDashboard(requestedUser?: string): Promise<DashboardDat
         })),
     },
     cypher,
+    path: {
+      to: { id: toId, name: name(toId) },
+      missingTo: requestedTo !== undefined && toId !== askedTo ? requestedTo : undefined,
+      length: route ? route.length - 1 : null,
+      steps: route
+        ? pathSteps(graph, route).map((s) => ({ ...s, label: s.kind === "user" ? name(s.id) : graph.title(s.id) }))
+        : [],
+      ms: pathMs,
+      distances: [...dist.byDistance.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(([distance, users]) => ({ distance, users })),
+      unreachable: dist.unreachable,
+      cypher: cypherPath,
+    },
   };
 }

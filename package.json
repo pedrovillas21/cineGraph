@@ -15,6 +15,8 @@
     "graph:hello": "tsx scripts/hello-graph.ts",
     "recommend": "tsx scripts/recommend.ts",
     "etl": "tsx scripts/etl-movielens.ts",
+    "loadtest": "tsx scripts/load-test.ts",
+    "loadtest:remote": "tsx scripts/load-test-remote.ts",
     "db:migrate": "tsx scripts/migrate.ts migrate",
     "db:info": "tsx scripts/migrate.ts info",
     "db:validate": "tsx scripts/migrate.ts validate",

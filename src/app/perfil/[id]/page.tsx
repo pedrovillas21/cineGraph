@@ -8,6 +8,7 @@ import { Rail } from "@/components/Rail";
 import { Pop, Reveal, WordReveal } from "@/components/motion";
 import { Section } from "@/components/Section";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SubgraphView } from "@/components/SubgraphView";
 import { getProfilePage } from "@/server/services/pageData";
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
               <ProfileCard key={p.id} profile={p} note={`${p.inCommon} filmes que vocês dois viram`} />
             ))}
           </Rail>
+        </Section>
+      )}
+
+      {data.subgraph && (
+        <Section
+          id="grafo"
+          title="Por dentro das suas recomendações"
+          subtitle="O caminho que o CineGraph percorreu no grafo: filmes que você e outras pessoas avaliaram, quem tem gosto parecido com o seu e o que essas pessoas adoraram."
+        >
+          <SubgraphView data={data.subgraph} profileId={profile.id} />
         </Section>
       )}
 

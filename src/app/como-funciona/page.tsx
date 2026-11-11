@@ -1,6 +1,7 @@
 import { GraphTour } from "@/components/GraphTour";
 import { Reveal, Stagger, WordReveal } from "@/components/motion";
 import { NeighborhoodCard } from "@/components/NeighborhoodCard";
+import { PathCard } from "@/components/PathCard";
 import { Section } from "@/components/Section";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StatCard } from "@/components/StatCard";
@@ -29,9 +30,9 @@ const steps = [
   },
 ];
 
-export default async function HowItWorks({ searchParams }: { searchParams: Promise<{ user?: string }> }) {
-  const { user } = await searchParams;
-  const data = await getDashboard(user);
+export default async function HowItWorks({ searchParams }: { searchParams: Promise<{ user?: string; ate?: string }> }) {
+  const { user, ate } = await searchParams;
+  const data = await getDashboard(user, ate);
   const tour = getTour();
 
   return (
@@ -119,10 +120,18 @@ export default async function HowItWorks({ searchParams }: { searchParams: Promi
           />
         </Stagger>
 
+        <div className="mt-4 sm:mt-6">
+          <PathCard user={data.user} path={data.path} />
+        </div>
+
         <p className="mt-6 break-words text-xs text-muted">
           Fonte: {data.source === "neo4j" ? "Neo4j AuraDB" : "grafo de exemplo (modo demo)"} · grafo carregado em{" "}
           {Math.round(data.loadMs)} ms · API: <code>/api/recommendations?userId={data.user.id}</code> ·{" "}
-          <code>/api/graph/neighbors?userId={data.user.id}&amp;engine=cypher</code> · <code>/api/health</code>
+          <code>/api/graph/neighbors?userId={data.user.id}&amp;engine=cypher</code> ·{" "}
+          <code>
+            /api/graph/path?from={data.user.id}&amp;to={data.path.to.id}
+          </code>{" "}
+          · <code>/api/health</code>
         </p>
       </Section>
 
